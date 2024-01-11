@@ -124,11 +124,13 @@ export default class TestCharacter {
 			//Gravity
 			if (!this.isOnGround) {
 				this.movementY -= this.gravity * this.scene.deltaTime / 10000
+				TestCharacter.preLastCollision = false;
 			} else {
-				this.tumbler(this.isOnGround) ? this.movementY = -this.jumpPower : null
+				this.tumbler(this.isOnGround) ? this.movementY = -0.1 : null
+				this.tumbler(this.isOnGround) ? console.log(`tryli`): console.log(`false`)
 				TestCharacter.preLastCollision = true
-				
 			}
+			console.log(this.movementY)
 
 			const movement = new Vector3(this.movementX, this.movementY, this.movementZ);
 			this.characterBase.moveWithCollisions(movement);
