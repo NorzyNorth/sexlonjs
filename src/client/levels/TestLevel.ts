@@ -26,7 +26,7 @@ const addEntities = (level: Level) => {
 	const dirLight = new HemisphericLight('direction light', new Vector3(0, 10, 0), level.scene);
 	dirLight.intensity = 0.8
 
-	const player = new TestCharacter(level.scene,new Vector3(0,1000,0),{jumpPower : 0.5 });
+	const player = new TestCharacter(level.scene,new Vector3(24,10,0),{jumpPower : 0.5 });
 	// player.characterBase.position = new Vector3(0, 0, 0);
 
 	const box = MeshBuilder.CreateBox('box', { size: 10 }, level.scene);
