@@ -7,8 +7,8 @@ window.CANNON = cannon;
 
 interface params {
 	characterSpeed?: number
-	jumpPower?: number 
-	gravity?: number 
+	jumpPower?: number
+	gravity?: number
 }
 export default class TestCharacter {
 	scene: Scene;
@@ -26,6 +26,7 @@ export default class TestCharacter {
 	private ray: Ray
 	isOnGround: boolean = false;
 	static physicsEngine: any = new PhysicsEngine(new Vector3(0, -1, 0));
+	static preLastCollision: boolean = false;
 
 	constructor(scene: Scene, position?: Vector3, optionalParams?: params) {
 		// Init character
@@ -37,9 +38,9 @@ export default class TestCharacter {
 		// optional params
 		position ? this.characterBase.position = position : null
 		optionalParams?.characterSpeed ? this.characterSpeed = optionalParams.characterSpeed : null
-		optionalParams?.jumpPower ? this.jumpPower = optionalParams.jumpPower : null 
+		optionalParams?.jumpPower ? this.jumpPower = optionalParams.jumpPower : null
 		optionalParams?.gravity ? this.gravity = optionalParams.gravity : null
-		
+
 		this.scene.onBeforeRenderObservable.add(() => {
 			this.position = this.characterBase.position;
 			this.isOnGround = this.checkGroundCollision();
@@ -109,7 +110,14 @@ export default class TestCharacter {
 		const hitInfo = this.scene.pickWithRay(this.ray, (mesh: AbstractMesh) => !(mesh == this.characterBase))
 		return hitInfo.hit ? true : false
 	}
+	private tumbler(lastCheck: boolean) {
+		if (lastCheck == true && TestCharacter.preLastCollision == false) {
+			return true
+		} else {
+			return false
+		}
 
+	}
 	private applyCharacterMovement() {
 		this.movementDirection = this.playerController.getMovementDirection();
 		if (this.movementDirection != null) {
@@ -120,6 +128,11 @@ export default class TestCharacter {
 			//Gravity
 			if (!this.isOnGround) {
 				this.movementY -= this.gravity * this.scene.deltaTime / 10000
+			} else {
+				this.tumbler(this.isOnGround) ? this.movementY = -this.jumpPower : null
+				this.tumbler(this.isOnGround) ? console.log(`tryli`): console.log(`false`)
+				TestCharacter.preLastCollision = true
+				
 			}
 
 			const movement = new Vector3(this.movementX, this.movementY, this.movementZ);
