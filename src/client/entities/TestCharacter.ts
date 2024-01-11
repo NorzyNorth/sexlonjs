@@ -1,20 +1,25 @@
 import { Color3, Mesh, MeshBuilder, PhysicsEngine, PhysicsRaycastResult, RayHelper, Scene, StandardMaterial, Vector3, Ray, AbstractMesh } from "@babylonjs/core";
 import PlayerContorller from "client/scripts/TestPlayerController";
 import cannon from "cannon";
+import { number } from "@colyseus/schema/lib/encoding/decode";
 
 window.CANNON = cannon;
 
-
+interface params {
+	characterSpeed?: number
+	jumpPower?: number 
+	gravity?: number 
+}
 export default class TestCharacter {
 	scene: Scene;
 	characterSpeed: number = 0.1;
 	jumpPower: number = 0.3;
-	characterBase: Mesh;
-	position: Vector3;
+	characterBase: Mesh = new Mesh('pivot');;
+	position: Vector3 = new Vector3(0, 0, 0);
 	movementDirection: Vector3 = Vector3.Zero();
-	movementX: number;
+	movementX: number = 0;
 	movementY: number = 0;
-	movementZ: number;
+	movementZ: number = 0;
 	gravity: number = 9.8;
 	playerController: PlayerContorller;
 	headPositionY: number
@@ -22,16 +27,19 @@ export default class TestCharacter {
 	isOnGround: boolean = false;
 	static physicsEngine: any = new PhysicsEngine(new Vector3(0, -1, 0));
 
-	constructor(scene: Scene) {
-		this.scene = scene;
-		// TestCharacter.physicsEngine = new PhysicsEngine(new Vector3(0, -1, 0));
-		this.characterBase = new Mesh('pivot');
+	constructor(scene: Scene, position?: Vector3, optionalParams?: params) {
+		// Init character
 		this.createVisual(this.characterBase);
-
+		this.scene = scene;
 		this.ray = new Ray(new Vector3(this.characterBase.position._x, this.characterBase.position._y - 0.1, this.characterBase.position._z), new Vector3(0, -1, 0), 0.2);
-
 		this.playerController = new PlayerContorller(this.scene)
 
+		// optional params
+		position ? this.characterBase.position = position : null
+		optionalParams?.characterSpeed ? this.characterSpeed = optionalParams.characterSpeed : null
+		optionalParams?.jumpPower ? this.jumpPower = optionalParams.jumpPower : null 
+		optionalParams?.gravity ? this.gravity = optionalParams.gravity : null
+		
 		this.scene.onBeforeRenderObservable.add(() => {
 			this.position = this.characterBase.position;
 			this.isOnGround = this.checkGroundCollision();
