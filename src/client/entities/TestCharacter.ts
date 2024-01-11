@@ -1,9 +1,6 @@
 import { Color3, Mesh, MeshBuilder, PhysicsEngine, PhysicsRaycastResult, RayHelper, Scene, StandardMaterial, Vector3, Ray, AbstractMesh } from "@babylonjs/core";
 import PlayerContorller from "client/scripts/TestPlayerController";
-import cannon from "cannon";
 import { number } from "@colyseus/schema/lib/encoding/decode";
-
-window.CANNON = cannon;
 
 interface params {
 	characterSpeed?: number
@@ -25,7 +22,6 @@ export default class TestCharacter {
 	headPositionY: number
 	private ray: Ray
 	isOnGround: boolean = false;
-	static physicsEngine: any = new PhysicsEngine(new Vector3(0, -1, 0));
 	static preLastCollision: boolean = false;
 
 	constructor(scene: Scene, position?: Vector3, optionalParams?: params) {
@@ -130,7 +126,6 @@ export default class TestCharacter {
 				this.movementY -= this.gravity * this.scene.deltaTime / 10000
 			} else {
 				this.tumbler(this.isOnGround) ? this.movementY = -this.jumpPower : null
-				this.tumbler(this.isOnGround) ? console.log(`tryli`): console.log(`false`)
 				TestCharacter.preLastCollision = true
 				
 			}

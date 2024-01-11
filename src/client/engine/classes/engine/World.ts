@@ -79,7 +79,6 @@ export class World {
       useMaterialMeshMap: true,
     };
     const scene = new Scene(this.getEngine(), options);
-    scene.enablePhysics();
     return scene;
   }
 
