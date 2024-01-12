@@ -1,51 +1,48 @@
 import { Color3, Mesh, MeshBuilder, PhysicsEngine, PhysicsRaycastResult, RayHelper, Scene, StandardMaterial, Vector3, Ray, AbstractMesh } from "@babylonjs/core";
 import PlayerContorller from "client/scripts/TestPlayerController";
 import { number } from "@colyseus/schema/lib/encoding/decode";
+import { Params } from "../entities/interfaces";
 
-interface params {
-	characterSpeed?: number
-	jumpPower?: number
-	gravity?: number
-}
-export default class TestCharacter {
+
+export default class Character {
 	scene: Scene;
-	characterSpeed: number = 0.1;
-	jumpPower: number = 0.3;
+
+	protected characterSpeed: number = 0.1;
+	protected jumpPower: number = 0.3;
 	characterBase: Mesh = new Mesh('pivot');;
-	position: Vector3 = new Vector3(0, 0, 0);
-	movementDirection: Vector3 = Vector3.Zero();
-	movementX: number = 0;
-	movementY: number = 0;
-	movementZ: number = 0;
+	protected position: Vector3 = new Vector3(0, 0, 0);
+	protected movementDirection: Vector3 = Vector3.Zero();
+	protected movementX: number = 0;
+	protected movementY: number = 0;
+	protected movementZ: number = 0;
 	gravity: number = 9.8;
-	playerController: PlayerContorller;
-	headPositionY: number
-	private ray: Ray
+	// headPositionY: number
 	isOnGround: boolean = false;
 	static preLastCollision: boolean = false;
 
-	constructor(scene: Scene, position?: Vector3, optionalParams?: params) {
+	/**
+	 * Creating a game character
+	 * @param {Scene} scene - Scheme required
+	 * @param {Vector3} position - Spawn position (optional)
+	 * @param {number=} optionalParams.characterSpeed - Character Speed (optional) (default 0.1)
+	 * @param {number} optionalParams.jumpPower - The power of the jump (optional) (default 0.3)
+	 * @param {number} optionalParams.gravity - Gravity (optional) (default 9.8)
+	 */
+	constructor(scene: Scene, position?: Vector3, optionalParams?: Params) {
 		// Init character
 		this.createVisual(this.characterBase);
 		this.scene = scene;
-		this.ray = new Ray(new Vector3(this.characterBase.position._x, this.characterBase.position._y - 0.1, this.characterBase.position._z), new Vector3(0, -1, 0), 0.2);
-		this.playerController = new PlayerContorller(this.scene)
-
 		// optional params
 		position ? this.characterBase.position = position : null
 		optionalParams?.characterSpeed ? this.characterSpeed = optionalParams.characterSpeed : null
 		optionalParams?.jumpPower ? this.jumpPower = optionalParams.jumpPower : null
 		optionalParams?.gravity ? this.gravity = optionalParams.gravity : null
-
 		this.scene.onBeforeRenderObservable.add(() => {
 			this.position = this.characterBase.position;
-			this.isOnGround = this.checkGroundCollision();
-			this.applyCharacterJumping();
-			this.applyCharacterMovement();
 		})
 	}
 
-	private createVisual(characterBase: Mesh) {
+	protected createVisual(characterBase: Mesh) {
 		const headDiam = 1.5;
 		const bodyDiam = 2;
 		const head = MeshBuilder.CreateSphere("head", { diameter: headDiam });
@@ -53,7 +50,7 @@ export default class TestCharacter {
 		const body = MeshBuilder.CreateSphere("body", { diameter: bodyDiam });
 		body.parent = characterBase;
 		head.position.y = 0.5 * headDiam + 0.85 * bodyDiam;
-		this.headPositionY = head.position.y
+		// this.headPositionY = head.position.y
 		body.position.y = 0.5 * (bodyDiam);
 
 		const duckMaterial = new StandardMaterial('duckMaterial', this.scene);
@@ -98,48 +95,8 @@ export default class TestCharacter {
 		//   ellipse[i].rotation.y = i * dTheta;
 		// }
 	}
-
-	log(mes: any) { console.log(mes) }
-
-	private checkGroundCollision() {
-		this.ray.origin = new Vector3(this.characterBase.position._x, this.characterBase.position._y - 0.1, this.characterBase.position._z)
-		const hitInfo = this.scene.pickWithRay(this.ray, (mesh: AbstractMesh) => !(mesh == this.characterBase))
-		return hitInfo.hit ? true : false
-	}
-	private tumbler(lastCheck: boolean) {
-		if (lastCheck == true && TestCharacter.preLastCollision == false) {
-			return true
-		} else {
-			return false
-		}
-
-	}
-	private applyCharacterMovement() {
-		this.movementDirection = this.playerController.getMovementDirection();
-		if (this.movementDirection != null) {
-			//Movement
-			this.movementX = this.movementDirection._x * this.characterSpeed;
-			this.movementZ = this.movementDirection._z * this.characterSpeed;
-
-			//Gravity
-			if (!this.isOnGround) {
-				this.movementY -= this.gravity * this.scene.deltaTime / 10000
-				TestCharacter.preLastCollision = false;
-			} else {
-				this.tumbler(this.isOnGround) ? this.movementY = -0.1 : null
-				this.tumbler(this.isOnGround) ? console.log(`tryli`): console.log(`false`)
-				TestCharacter.preLastCollision = true
-			}
-			console.log(this.movementY)
-
-			const movement = new Vector3(this.movementX, this.movementY, this.movementZ);
-			this.characterBase.moveWithCollisions(movement);
-		}
-	}
-
-	private applyCharacterJumping() {
-		if (this.playerController.checkjumpInput() && this.isOnGround) {
-			this.movementY = this.jumpPower;
-		}
-	}
 }
+
+	
+	
+

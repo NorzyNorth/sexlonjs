@@ -2,7 +2,7 @@ import { ArcRotateCamera, FreeCamera, SceneLoader, HemisphericLight, MeshBuilder
 import { PhysicsAggregate, PhysicsShapeType } from '@babylonjs/core/Physics/v2'
 import { World } from "client/engine/classes/engine/World";
 import { Level } from "client/engine/classes/engine/Level";
-import TestCharacter from "client/entities/TestCharacter";
+import Character from "client/entities/TestCharacter";
 import TestCamera from "client/entities/TestCamera";
 import { Inspector } from "@babylonjs/inspector";
 
@@ -18,7 +18,7 @@ const addEntities = (level: Level) => {
 	// Inspector.Show(level.scene, {});
 
 	level.scene.collisionsEnabled = true
-	const ground = MeshBuilder.CreateGround('ground', { width: 50, height: 50 }, level.scene);
+	const ground = MeshBuilder.CreateGround('ground', { width: 500, height: 500 }, level.scene);
 	ground.checkCollisions = true;
 
 	// const player = SceneLoader.ImportMeshAsync('', 'C:\\Users\\User\\Documents\\GitLab\\babylonjs-metaverse\\public\\models\\', 'xbot.glb', level.scene);
@@ -26,7 +26,7 @@ const addEntities = (level: Level) => {
 	const dirLight = new HemisphericLight('direction light', new Vector3(0, 10, 0), level.scene);
 	dirLight.intensity = 0.8
 
-	const player = new TestCharacter(level.scene,new Vector3(24,10,0),{jumpPower : 0.5 });
+	const player = new Character(level.scene,new Vector3(24,10,0),{jumpPower : 0.1 , characterSpeed: 1});
 	// player.characterBase.position = new Vector3(0, 0, 0);
 
 	const box = MeshBuilder.CreateBox('box', { size: 10 }, level.scene);
