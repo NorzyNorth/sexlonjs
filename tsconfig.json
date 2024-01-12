@@ -1,0 +1,41 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist/clent/",
+    "noImplicitAny": true,
+    "module": "ESNext",
+    "target": "es5",
+    "allowJs": true,
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    // "strictNullChecks": false,
+    // for server
+    // "useDefineForClassFields": false,
+    // "experimentalDecorators": true,
+    //===================
+    //для абсолютного импорта ,
+    "baseUrl": ".",
+    "paths": {
+      "*": [
+        "./src/*"
+      ]
+    },
+    "isolatedModules": true
+  },
+  "ts-node": {
+    "compilerOptions": {
+      "module": "CommonJS"
+    }
+  },
+  "include": [
+    "./src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "./src/server",
+    "./src/client/old"
+  ]
+}
