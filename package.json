@@ -44,6 +44,7 @@
   "dependencies": {
     "@babylonjs/core": "^6.30.0",
     "@babylonjs/gui": "^6.30.0",
+    "@babylonjs/havok": "^1.3.0",
     "@babylonjs/loaders": "^6.30.0",
     "@babylonjs/serializers": "^6.30.0",
     "@colyseus/arena": "^0.14.24",

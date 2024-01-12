@@ -1,6 +1,6 @@
-import { Color3, Mesh, MeshBuilder, PhysicsEngine, PhysicsRaycastResult, RayHelper, Scene, StandardMaterial, Vector3, Ray, AbstractMesh } from "@babylonjs/core";
+import { Color3, Mesh, MeshBuilder, Scene, StandardMaterial, Vector3, Ray, AbstractMesh } from "@babylonjs/core";
 import PlayerContorller from "client/scripts/TestPlayerController";
-import { number } from "@colyseus/schema/lib/encoding/decode";
+import TestCamera from "./TestCamera";
 
 interface params {
 	characterSpeed?: number
@@ -10,9 +10,11 @@ interface params {
 export default class TestCharacter {
 	scene: Scene;
 	characterSpeed: number = 0.1;
+	camera: TestCamera
 	jumpPower: number = 0.3;
 	characterBase: Mesh = new Mesh('pivot');;
 	position: Vector3 = new Vector3(0, 0, 0);
+	rotation: Vector3 = new Vector3(0, 0, 0);
 	movementDirection: Vector3 = Vector3.Zero();
 	movementX: number = 0;
 	movementY: number = 0;
@@ -28,6 +30,7 @@ export default class TestCharacter {
 		// Init character
 		this.createVisual(this.characterBase);
 		this.scene = scene;
+		this.camera = new TestCamera(this.scene, this.characterBase);
 		this.ray = new Ray(new Vector3(this.characterBase.position._x, this.characterBase.position._y - 0.1, this.characterBase.position._z), new Vector3(0, -1, 0), 0.2);
 		this.playerController = new PlayerContorller(this.scene)
 
@@ -38,10 +41,10 @@ export default class TestCharacter {
 		optionalParams?.gravity ? this.gravity = optionalParams.gravity : null
 
 		this.scene.onBeforeRenderObservable.add(() => {
-			this.position = this.characterBase.position;
 			this.isOnGround = this.checkGroundCollision();
 			this.applyCharacterJumping();
 			this.applyCharacterMovement();
+			this.applyCharacterRotation();
 		})
 	}
 
@@ -64,9 +67,9 @@ export default class TestCharacter {
 		const eyeLeft = MeshBuilder.CreateSphere("eyeLeft", { diameterX: 0.2, diameterY: 0.4, diameterZ: 0.2 }, this.scene);
 		const eyeRight = MeshBuilder.CreateSphere("eyeLeft", { diameterX: 0.2, diameterY: 0.4, diameterZ: 0.2 }, this.scene);
 		eyeLeft.parent = head;
-		eyeLeft.position = new Vector3(0.4 * headDiam, 0.15 * headDiam, 0.15 * headDiam)
+		eyeLeft.position = new Vector3(0.15 * headDiam, 0.15 * headDiam, 0.4 * headDiam)
 		eyeRight.parent = head;
-		eyeRight.position = new Vector3(0.4 * headDiam, 0.15 * headDiam, -0.15 * headDiam)
+		eyeRight.position = new Vector3(-0.15 * headDiam, 0.15 * headDiam, 0.4 * headDiam)
 
 		const eyesMaterial = new StandardMaterial('eyesMaterial', this.scene);
 		eyesMaterial.diffuseColor = new Color3(0, 0, 0);
@@ -106,6 +109,7 @@ export default class TestCharacter {
 		const hitInfo = this.scene.pickWithRay(this.ray, (mesh: AbstractMesh) => !(mesh == this.characterBase))
 		return hitInfo.hit ? true : false
 	}
+
 	private tumbler(lastCheck: boolean) {
 		if (lastCheck == true && TestCharacter.preLastCollision == false) {
 			return true
@@ -114,6 +118,7 @@ export default class TestCharacter {
 		}
 
 	}
+	
 	private applyCharacterMovement() {
 		this.movementDirection = this.playerController.getMovementDirection();
 		if (this.movementDirection != null) {
@@ -130,10 +135,9 @@ export default class TestCharacter {
 				this.tumbler(this.isOnGround) ? console.log(`tryli`): console.log(`false`)
 				TestCharacter.preLastCollision = true
 			}
-			console.log(this.movementY)
-
 			const movement = new Vector3(this.movementX, this.movementY, this.movementZ);
 			this.characterBase.moveWithCollisions(movement);
+			console.log(movement);
 		}
 	}
 
@@ -141,5 +145,11 @@ export default class TestCharacter {
 		if (this.playerController.checkjumpInput() && this.isOnGround) {
 			this.movementY = this.jumpPower;
 		}
+	}
+
+	private applyCharacterRotation() {
+		this.characterBase.rotate(new Vector3(0, 1, 0), 10);
+		// this.characterBase.rotation.y = this.camera.rotation.y;
+		// console.log(this.camera.rotation);
 	}
 }

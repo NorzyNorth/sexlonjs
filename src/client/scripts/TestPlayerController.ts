@@ -71,5 +71,12 @@ export default class PlayerContorller {
 			return true;
 		}
 	}
+
+	// getMouseInput() {
+	// 	const canvas = document.getElementById('renderCanvas') as HTMLCanvasElement;
+	// 	canvas.addEventListener('click', () => {
+	// 		canvas.requestPointerLock = canvas.requestPointerLock
+	// 	})
+	// }
 }
 

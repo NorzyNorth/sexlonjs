@@ -21,32 +21,30 @@ const addEntities = (level: Level) => {
 	const ground = MeshBuilder.CreateGround('ground', { width: 50, height: 50 }, level.scene);
 	ground.checkCollisions = true;
 
-	// const player = SceneLoader.ImportMeshAsync('', 'C:\\Users\\User\\Documents\\GitLab\\babylonjs-metaverse\\public\\models\\', 'xbot.glb', level.scene);
+	// const player = SceneLoader.ImportMesh('', 'C:\\Users\\User\\Documents\\GitLab\\babylonjs-metaverse\\public\\models\\', 'xbot.glb', level.scene);
 
 	const dirLight = new HemisphericLight('direction light', new Vector3(0, 10, 0), level.scene);
 	dirLight.intensity = 0.8
 
 	const player = new TestCharacter(level.scene,new Vector3(24,10,0),{jumpPower : 0.5 });
-	// player.characterBase.position = new Vector3(0, 0, 0);
+	player.characterBase.position = new Vector3(0, 0, 0);
 
-	const box = MeshBuilder.CreateBox('box', { size: 10 }, level.scene);
-	box.checkCollisions = true;
-	box.position = new Vector3(0, 100, 0);
-	const boxMaterial = new StandardMaterial('box', level.scene);
-	boxMaterial.diffuseColor = new Color3(0.5, 0.1, 0.4)
-	box.material = boxMaterial;
+	// const box = MeshBuilder.CreateBox('box', { size: 10 }, level.scene);
+	// box.checkCollisions = true;
+	// box.position = new Vector3(0, 100, 0);
+	// const boxMaterial = new StandardMaterial('box', level.scene);
+	// boxMaterial.diffuseColor = new Color3(0.5, 0.1, 0.4)
+	// box.material = boxMaterial;
 
-	const box1 = MeshBuilder.CreateBox('box', { size: 10 }, level.scene);
-	box1.checkCollisions = true;
-	box1.position = new Vector3(0, 150, 0);
-	const boxMaterial1 = new StandardMaterial('box1', level.scene);
-	boxMaterial1.diffuseColor = new Color3(0.1, 0.3, 0.9)
-	box1.material = boxMaterial1;
+	// const box1 = MeshBuilder.CreateBox('box', { size: 10 }, level.scene);
+	// box1.checkCollisions = true;
+	// box1.position = new Vector3(0, 150, 0);
+	// const boxMaterial1 = new StandardMaterial('box1', level.scene);
+	// boxMaterial1.diffuseColor = new Color3(0.1, 0.3, 0.9)
+	// box1.material = boxMaterial1;
 
-	level.scene.onBeforeRenderObservable.add(() => {
-		box.moveWithCollisions(new Vector3(0, -0.1, 0));
-		box1.moveWithCollisions(new Vector3(0, -0.1, 0));
-	})
-
-	const camera = new TestCamera(level.scene, player);
+	// level.scene.onBeforeRenderObservable.add(() => {
+	// 	box.moveWithCollisions(new Vector3(0, -0.1, 0));
+	// 	box1.moveWithCollisions(new Vector3(0, -0.1, 0));
+	// })
 }
