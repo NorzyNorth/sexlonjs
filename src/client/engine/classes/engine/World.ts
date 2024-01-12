@@ -1,8 +1,9 @@
-import { AssetsManager, Scene, SceneOptions } from "@babylonjs/core";
+import { AssetsManager, HavokPlugin, Scene, SceneOptions, Vector3 } from "@babylonjs/core";
 import { Actor } from "../GameFramework";
 import { GameInstance } from "./GameInstance";
 import { Level } from "./Level";
 import { IWorldSettings, WorldSettings } from "./WorldSettings";
+import HavokPhysics from "@babylonjs/havok";
 
 export class World {
   URL: string;
@@ -79,6 +80,10 @@ export class World {
       useMaterialMeshMap: true,
     };
     const scene = new Scene(this.getEngine(), options);
+    // var gravityVector = new Vector3(0, -9.81, 0);
+    // var physicsPlugin = new HavokPlugin();
+    // scene.enablePhysics(gravityVector, physicsPlugin);
+
     return scene;
   }
 

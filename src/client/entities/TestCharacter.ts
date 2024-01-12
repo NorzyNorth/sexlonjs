@@ -1,4 +1,4 @@
-import { Color3, Mesh, MeshBuilder, PhysicsEngine, PhysicsRaycastResult, RayHelper, Scene, StandardMaterial, Vector3, Ray, AbstractMesh } from "@babylonjs/core";
+import { Color3, Mesh, MeshBuilder, Scene, StandardMaterial, Vector3, Ray, AbstractMesh } from "@babylonjs/core";
 import PlayerContorller from "client/scripts/TestPlayerController";
 import { number } from "@colyseus/schema/lib/encoding/decode";
 import { Params } from "../entities/interfaces";
@@ -61,9 +61,9 @@ export default class Character {
 		const eyeLeft = MeshBuilder.CreateSphere("eyeLeft", { diameterX: 0.2, diameterY: 0.4, diameterZ: 0.2 }, this.scene);
 		const eyeRight = MeshBuilder.CreateSphere("eyeLeft", { diameterX: 0.2, diameterY: 0.4, diameterZ: 0.2 }, this.scene);
 		eyeLeft.parent = head;
-		eyeLeft.position = new Vector3(0.4 * headDiam, 0.15 * headDiam, 0.15 * headDiam)
+		eyeLeft.position = new Vector3(0.15 * headDiam, 0.15 * headDiam, 0.4 * headDiam)
 		eyeRight.parent = head;
-		eyeRight.position = new Vector3(0.4 * headDiam, 0.15 * headDiam, -0.15 * headDiam)
+		eyeRight.position = new Vector3(-0.15 * headDiam, 0.15 * headDiam, 0.4 * headDiam)
 
 		const eyesMaterial = new StandardMaterial('eyesMaterial', this.scene);
 		eyesMaterial.diffuseColor = new Color3(0, 0, 0);
