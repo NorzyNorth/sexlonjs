@@ -11,6 +11,8 @@ import {
 import { Inspector } from '@babylonjs/inspector';
 import { GameEngine, GameEngineOptions } from "client/engine/classes/engine/GameEngine";
 import { Actor } from "./engine/classes/GameFramework";
+import { addEntities, initLevel } from "./engine/classes/levels/TestLevel";
+import HavokPhysics from "@babylonjs/havok";
 
 const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
 
@@ -28,39 +30,38 @@ EngineFactory.CreateAsync(canvas, {
   const world = engine.gameInstance.createDefaultWorld();
   world.showGameLoadingScreen();
 
-  const level = world.createLevel();
-  world.setStartLevel(level);
-
+  const level = initLevel(world);
 
   // content
-  class BallActor extends Actor {
-    RosAtom_Full = "RosAtom_Full";
+  // class BallActor extends Actor {
+  //   RosAtom_Full = "RosAtom_Full";
 
-    constructor() {
-      const name = 'ball';
+  //   constructor() {
+  //     const name = 'ball';
 
-      super(name, level.scene);
+  //     super(name, level.scene);
 
-      const ball = MeshBuilder.CreateSphere(name, { diameter: 1 });
-      ball.parent = this.root;
+  //     // const ball = MeshBuilder.CreateSphere(name, { diameter: 1 });
+  //     // ball.parent = this.root;
+  //     console.log(this.meshAssetsMap);
+  //     this.addMeshAssetTask(this.RosAtom_Full, "models/", "Duck.glb");
+  //     console.log(this.meshAssetsMap);
+  //   }
 
-      this.addMeshAssetTask(this.RosAtom_Full, "models/", "RosAtom_Full.glb");
-    }
+  //   onBeginPlay = () => {
+  //     console.log('BallActor onBeginPlay');
 
-    onBeginPlay = () => {
-      console.log('BallActor onBeginPlay');
+  //     this.meshAssetsMap.get(this.RosAtom_Full)?.loadedMeshes[0].position.set(0, 0, 0);
+  //     console.log(this.meshAssetsMap.get(this.RosAtom_Full));
+  //   };
+  // }
 
-      this.meshAssetsMap.get(this.RosAtom_Full)?.loadedMeshes[0].position.set(0, 10.6, 0);
-      // console.log(this.meshAssetsMap.get(this.RosAtom_Full));
-    };
-  }
+  // const light = new HemisphericLight("HemisphericLight", new Vector3(1, 1, 0), level.scene);
+  // light.intensity = 0.7;
 
-  const light = new HemisphericLight("HemisphericLight", new Vector3(1, 1, 0), level.scene);
-  light.intensity = 0.7;
-
-  const camera = new FreeCamera('FreeCamera', new Vector3(10, 5, 10), level.scene);
-  camera.setTarget(new Vector3(0, 0, 0));
-  camera.attachControl();
+  // const camera = new FreeCamera('FreeCamera', new Vector3(10, 5, 10), level.scene);
+  // camera.setTarget(new Vector3(0, 0, 0));
+  // camera.attachControl();
 
 
   // run 
@@ -68,17 +69,23 @@ EngineFactory.CreateAsync(canvas, {
     .then(() => {
       world.hideGameLoadingScreen();
       engine.start();
+      getInitializedHavok();
 
-      const ballActor = new BallActor();
-      world.spawnActor(ballActor);
+      addEntities(level, world);
+      // const ballActor = new BallActor();
+      // world.spawnActor(ballActor);
 
       if (__IS_DEV__) {
         Inspector.Show(level.scene, {});
       }
 
-      // setTimeout(() => {
-      //   const isDestroyed = world.destroyActor(ballActor);
-      //   console.log('world.destroyActor', isDestroyed);
-      // }, 3000);
+  async function getInitializedHavok() {
+    return await HavokPhysics();
+  }
+
+  //     // setTimeout(() => {
+  //     //   const isDestroyed = world.destroyActor(ballActor);
+  //     //   console.log('world.destroyActor', isDestroyed);
+  //     // }, 3000);
     });
 })

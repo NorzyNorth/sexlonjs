@@ -11,7 +11,7 @@
     "strict": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    // "strictNullChecks": false,
+    "strictNullChecks": false,
     // for server
     // "useDefineForClassFields": false,
     // "experimentalDecorators": true,

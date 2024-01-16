@@ -1,4 +1,4 @@
-import { MeshAssetTask, Node, Scene, TextureAssetTask, TransformNode } from "@babylonjs/core";
+import { Mesh, MeshAssetTask, Node, Scene, TextureAssetTask } from "@babylonjs/core";
 import { EEndPlayReason } from "../engine/World";
 
 
@@ -25,14 +25,14 @@ const defaultPropertyOption: Required<IPropertyOptions> = {
   replication: false,
 }
 
-interface IActorOptions {
+export interface IActorOptions {
 }
 
 // By default, each replicated property has a built-in condition, and that is that they don't replicate if they haven't changed. 
 
 export class Actor {
   URL: string;
-  root: TransformNode;
+  root: Mesh;
   name: string;
 
   isReplicated: boolean = false;
@@ -46,7 +46,7 @@ export class Actor {
   private lastReplicateTime: string | null = null;
   private _isCompleteSpawned: boolean = false;     // завершение спавна
 
-  private scene: Scene;
+  protected scene: Scene;
 
   _meshAssetsTasksQueue: IMeshAssetsTaskProps[] = [];
   _textureAssetsTasksQueue: ITextureAssetsTaskProps[] = [];
@@ -61,7 +61,7 @@ export class Actor {
     this.scene = scene;
     this.URL = String(new Date().getTime());
 
-    this.root = new TransformNode(name, scene);
+    this.root = new Mesh('Pivot');
     this.root.setEnabled(false);
     this.root.name = name;
 

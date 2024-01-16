@@ -1,5 +1,6 @@
 import {
   AssetsManager,
+  HavokPlugin,
   ILoadingScreen,
   Scene,
   SceneOptions,
@@ -11,7 +12,6 @@ import { GameInstance } from "./GameInstance";
 import { Level } from "./Level";
 import { IWorldSettings, WorldSettings } from "./WorldSettings";
 import { LoadingScreen } from "./LoadingScreen";
-
 
 // TODO необходимость под вопросом
 export enum EEndPlayReason {
@@ -229,6 +229,9 @@ export class World {
       useMaterialMeshMap: true,
     };
     const scene = new Scene(this.getEngine(), options);
+    const gravityVector = new Vector3(0, -9.81, 0);
+    // const physicsPlugin = new HavokPlugin;
+    // scene.enablePhysics(gravityVector, physicsPlugin);
     return scene;
   }
 
