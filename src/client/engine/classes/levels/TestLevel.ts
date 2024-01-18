@@ -23,11 +23,11 @@ export const addEntities = (level: Level, world: World) => {
 	level.scene.collisionsEnabled = true
 	const ground = MeshBuilder.CreateGround('ground', { width: 50, height: 50 }, level.scene);
 
-	const sphere = MeshBuilder.CreateSphere("sphere", {diameter: 2, segments: 32}, level.scene);
+	// const sphere = MeshBuilder.CreateSphere("sphere", {diameter: 2, segments: 32}, level.scene);
 
-	sphere.position.y = 4;
+	// sphere.position.y = 4;
 
-	const sphereAggregate = new PhysicsAggregate(sphere, PhysicsShapeType.SPHERE, { mass: 1, restitution:0.75}, level.scene);
+	// const sphereAggregate = new PhysicsAggregate(sphere, PhysicsShapeType.SPHERE, { mass: 1, restitution:0.75}, level.scene);
 
 	const groundAggregate = new PhysicsAggregate(ground, PhysicsShapeType.BOX, { mass: 0 }, level.scene);
 

@@ -16,9 +16,14 @@ export default class Player extends Actor {
 	private gameInput: GameInput;
 	private ray: Ray;
 	private isOnGround: boolean = false;
-
+	private capsuleAgregate: PhysicsAggregate
 	constructor(name: string, scene: Scene) {
 		super(name, scene)
+		this.capsuleAgregate = new PhysicsAggregate(this.root, PhysicsShapeType.CAPSULE, { mass: 10, radius: 0.8, pointA: new Vector3(0, 1.25, 0), pointB: new Vector3(0, 0.7, 0) }, this.scene);
+		this.capsuleAgregate.body.setMassProperties({
+			inertia: new Vector3(0, 0, 0)
+		});
+		this.capsuleAgregate.body.disablePreStep = false
 		this.name = name;
 		this.scene = scene;
 		this.gameInput = new GameInput(scene);
@@ -28,9 +33,8 @@ export default class Player extends Actor {
 	}
 
 	onTick = (deltaTime: number) => {
-		if (deltaTime){
+		if (deltaTime) {
 			this.updatePosition();
-			this.applyPhysics();
 			this.isOnGround = this.checkGroundCollision();
 			console.log(this.isOnGround)
 			this.move(deltaTime);
@@ -50,13 +54,13 @@ export default class Player extends Actor {
 
 	private checkGroundCollision = () => {
 		this.ray.origin = new Vector3(this.root.position._x, this.root.position._y - 0.1, this.root.position._z)
-		const hitInfo : PickingInfo = this.scene.pickWithRay(this.ray, (mesh: AbstractMesh) => !(mesh == this.root))
+		const hitInfo: PickingInfo = this.scene.pickWithRay(this.ray, (mesh: AbstractMesh) => !(mesh == this.root))
 		return hitInfo.hit ? true : false
 	}
 
 	private move = (deltaTime: number) => {
 		this.movementDirection = this.gameInput.getInputDirection();
-		
+
 		if (this.movementDirection != null) {
 			//Movement
 			this.movementX = this.movementDirection._x * this.movementSpeed;
@@ -78,7 +82,4 @@ export default class Player extends Actor {
 		}
 	}
 
-	private applyPhysics = () => {
-		const capsuleAgregate = new PhysicsAggregate(this.root, PhysicsShapeType.SPHERE, {mass: 1, restitution: 0.75, }, this.scene);
-	}
 };
