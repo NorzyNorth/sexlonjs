@@ -16,9 +16,14 @@ export default class Player extends Actor {
 	private gameInput: GameInput;
 	private ray: Ray;
 	private isOnGround: boolean = false;
-
+	private capsuleAgregate: PhysicsAggregate
 	constructor(name: string, scene: Scene) {
 		super(name, scene)
+		this.capsuleAgregate = new PhysicsAggregate(this.root, PhysicsShapeType.CAPSULE, { mass: 10, radius: 0.8, pointA: new Vector3(0, 1.25, 0), pointB: new Vector3(0, 0.7, 0) }, this.scene);
+		this.capsuleAgregate.body.setMassProperties({
+			inertia: new Vector3(0, 0, 0)
+		});
+		this.capsuleAgregate.body.disablePreStep = false
 		this.name = name;
 		this.scene = scene;
 		this.gameInput = new GameInput(scene);
@@ -56,7 +61,7 @@ export default class Player extends Actor {
 
 	private move = (deltaTime: number) => {
 		this.movementDirection = this.gameInput.getInputDirection();
-
+		
 		if (this.movementDirection != null) {
 			//Movement
 			this.movementX = this.movementDirection._x * this.movementSpeed;
