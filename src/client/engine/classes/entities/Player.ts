@@ -79,6 +79,6 @@ export default class Player extends Actor {
 	}
 
 	private applyPhysics = () => {
-		const capsuleAgregate = new PhysicsAggregate(this.root, PhysicsShapeType.CAPSULE, {mass: 1}, this.scene);
+		const capsuleAgregate = new PhysicsAggregate(this.root, PhysicsShapeType.SPHERE, {mass: 1, restitution: 0.75, }, this.scene);
 	}
 };
