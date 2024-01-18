@@ -1,4 +1,4 @@
-import { Color3, Mesh, MeshBuilder, PhysicsEngine, PhysicsRaycastResult, RayHelper, Scene, StandardMaterial, Vector3, Ray, AbstractMesh, CannonJSPlugin } from "@babylonjs/core";
+import { Color3, Mesh, MeshBuilder, PhysicsEngine, PhysicsRaycastResult, RayHelper, Scene, StandardMaterial, Vector3, Ray, AbstractMesh, CannonJSPlugin, PhysicsAggregate, PhysicsShapeType } from "@babylonjs/core";
 import GameInput from "client/scripts/GameInput";
 import cannon from "cannon"
 
@@ -33,6 +33,7 @@ export default class TestCharacter {
 
 		this.scene.onBeforeRenderObservable.add(() => {
 			this.position = this.characterBase.position;
+			this.applyPhysics();
 			this.isOnGround = this.checkGroundCollision();
 			this.applyCharacterJumping();
 			this.applyCharacterMovement();
@@ -109,9 +110,9 @@ export default class TestCharacter {
 			this.movementZ = this.movementDirection._z * this.characterSpeed;
 
 			//Gravity
-			if (!this.isOnGround) {
-				this.movementY -= this.gravity * this.scene.deltaTime / 10000
-			}
+			// if (!this.isOnGround) {
+			// 	this.movementY -= this.gravity * this.scene.deltaTime / 10000
+			// }
 
 			const movement = new Vector3(this.movementX, this.movementY, this.movementZ);
 			this.characterBase.moveWithCollisions(movement);
@@ -122,5 +123,9 @@ export default class TestCharacter {
 		if (this.gameInput.checkjumpInput() && this.isOnGround) {
 			this.movementY = this.jumpPower;
 		}
+	}
+
+	private applyPhysics = () => {
+		const capsuleAgregate = new PhysicsAggregate(this.characterBase, PhysicsShapeType.CAPSULE, { mass: 1, restitution: 0.75, radius: 1, pointA: new Vector3(0, 0, 0), pointB: new Vector3(0, 2, 0) }, this.scene);
 	}
 }
