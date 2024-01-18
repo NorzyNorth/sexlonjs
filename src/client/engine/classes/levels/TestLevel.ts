@@ -8,13 +8,13 @@ import { Inspector } from "@babylonjs/inspector";
 import Player from "../entities/Player";
 import TestCharacter from "../entities/TestCharacter";
 
-export const initLevel = (world: World) => {
-	const level = world.createLevel();
+export const initLevel = async (world: World) => {
+	const level = await world.createLevel();
 
 	return level;
 }
 
-export const addEntities = async (level: Level, world: World) => {
+export const addEntities = (level: Level, world: World) => {
 	// Inspector.Show(level.scene, {});
 
 	const camera = new FreeCamera('camera', new Vector3(0,2,-24), level.scene);
@@ -68,7 +68,7 @@ export const addEntities = async (level: Level, world: World) => {
 	// })
 
 	const player = new Player('Duck', level.scene);
-	await world.spawnActor(player, new Vector3(0, 10, 0));
+	world.spawnActor(player, new Vector3(0, 10, 0));
 	// const player = new TestCharacter(level.scene);
 
 	// const camera = new TestCamera(level.scene, player);

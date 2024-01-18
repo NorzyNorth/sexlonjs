@@ -19,7 +19,7 @@ const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
 EngineFactory.CreateAsync(canvas, {
   adaptToDeviceRatio: true,
   antialias: true,
-}).then(renderEngine => {
+}).then(async renderEngine => {
   const engine = new GameEngine(renderEngine, GameEngineOptions.clientOptions(canvas));
 
   engine.init();
@@ -30,7 +30,7 @@ EngineFactory.CreateAsync(canvas, {
   const world = engine.gameInstance.createDefaultWorld();
   world.showGameLoadingScreen();
 
-  const level = initLevel(world);
+  const level = await initLevel(world);
 
   // content
   // class BallActor extends Actor {
@@ -69,7 +69,6 @@ EngineFactory.CreateAsync(canvas, {
     .then(() => {
       world.hideGameLoadingScreen();
       engine.start();
-      getInitializedHavok();
 
       addEntities(level, world);
       // const ballActor = new BallActor();
@@ -79,9 +78,9 @@ EngineFactory.CreateAsync(canvas, {
         Inspector.Show(level.scene, {});
       }
 
-  async function getInitializedHavok() {
-    return await HavokPhysics();
-  }
+      async function getInitializedHavok() {
+        return await HavokPhysics();
+      }
 
   //     // setTimeout(() => {
   //     //   const isDestroyed = world.destroyActor(ballActor);
@@ -89,3 +88,4 @@ EngineFactory.CreateAsync(canvas, {
   //     // }, 3000);
     });
 })
+

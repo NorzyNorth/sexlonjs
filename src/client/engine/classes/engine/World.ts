@@ -12,6 +12,7 @@ import { GameInstance } from "./GameInstance";
 import { Level } from "./Level";
 import { IWorldSettings, WorldSettings } from "./WorldSettings";
 import { LoadingScreen } from "./LoadingScreen";
+import HavokPhysics from "@babylonjs/havok";
 
 // TODO необходимость под вопросом
 export enum EEndPlayReason {
@@ -180,8 +181,8 @@ export class World {
 
   async asyncLoadLevel() { }
 
-  createLevel(): Level {
-    const scene = this.createScene();
+  async createLevel() {
+    const scene = await this.createScene();
     const level = new Level(this, scene);
     this.addLevel(level);
 
@@ -221,7 +222,7 @@ export class World {
     this.startLevel = level;
   }
 
-  createScene() {
+  async createScene() {
     // TODO SceneOptions добавить в worldSettings
     const options: SceneOptions = {
       useClonedMeshMap: true,
@@ -230,8 +231,11 @@ export class World {
     };
     const scene = new Scene(this.getEngine(), options);
     const gravityVector = new Vector3(0, -9.81, 0);
-    // const physicsPlugin = new HavokPlugin;
-    // scene.enablePhysics(gravityVector, physicsPlugin);
+    const havokInstance = await HavokPhysics();
+    const havokPlugin = new HavokPlugin(true, havokInstance);
+    scene.enablePhysics(gravityVector, havokPlugin);
+    // console.log(`Havok instance => ${havokInstance}`);
+    // console.log(`Havok plugin => ${havokPlugin}`)
     return scene;
   }
 

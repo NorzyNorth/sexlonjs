@@ -1,4 +1,4 @@
-import { AbstractMesh, Color3, MeshBuilder, PickingInfo, Ray, Scene, Vector3 } from "@babylonjs/core";
+import { AbstractMesh, Color3, MeshBuilder, PhysicsAggregate, PhysicsShapeType, PickingInfo, Ray, Scene, Vector3 } from "@babylonjs/core";
 import { Actor } from "../GameFramework";
 import GameInput from "client/scripts/GameInput";
 
@@ -22,7 +22,7 @@ export default class Player extends Actor {
 		this.name = name;
 		this.scene = scene;
 		this.gameInput = new GameInput(scene);
-		this.ray = new Ray(new Vector3(this.root.position._x, this.root.position._y, this.root.position._z), new Vector3(0, -1, 0), 0.2);
+		this.ray = new Ray(new Vector3(this.root.position._x, this.root.position._y, this.root.position._z), new Vector3(0, -1, 0), 2);
 
 		this.addMeshAssetTask(this.name, "models/", "Duck.glb");
 	}
@@ -30,6 +30,7 @@ export default class Player extends Actor {
 	onTick = (deltaTime: number) => {
 		if (deltaTime){
 			this.updatePosition();
+			this.applyPhysics();
 			this.isOnGround = this.checkGroundCollision();
 			console.log(this.isOnGround)
 			this.move(deltaTime);
@@ -41,7 +42,6 @@ export default class Player extends Actor {
 		console.log('DuckActor onBeginPlay');
 		this.meshAssetsMap.get(this.name)?.loadedMeshes[0].position.set(0, 0, 0);
 		this.position = this.root.position
-		// this.createCollisionElipsoid();
 	};
 
 	private updatePosition = () => {
@@ -49,7 +49,7 @@ export default class Player extends Actor {
 	}
 
 	private checkGroundCollision = () => {
-		this.ray.origin = new Vector3(this.root.position._x, this.root.position._y - 0.01, this.root.position._z)
+		this.ray.origin = new Vector3(this.root.position._x, this.root.position._y - 0.1, this.root.position._z)
 		const hitInfo : PickingInfo = this.scene.pickWithRay(this.ray, (mesh: AbstractMesh) => !(mesh == this.root))
 		return hitInfo.hit ? true : false
 	}
@@ -64,9 +64,9 @@ export default class Player extends Actor {
 
 
 			//Gravity
-			if (!this.isOnGround) {
-				this.movementY -= Number(this.gravity) * Number(this.scene.deltaTime) / 10000;
-			}
+			// if (!this.isOnGround) {
+			// 	this.movementY -= this.gravity * this.scene.deltaTime / 10000;
+			// }
 			const movement = new Vector3(this.movementX, this.movementY, this.movementZ);
 			this.root.moveWithCollisions(movement);
 		};
@@ -76,5 +76,9 @@ export default class Player extends Actor {
 		if (this.gameInput.checkjumpInput() && this.isOnGround) {
 			this.movementY = this.jumpPower;
 		}
+	}
+
+	private applyPhysics = () => {
+		const capsuleAgregate = new PhysicsAggregate(this.root, PhysicsShapeType.CAPSULE, {mass: 1}, this.scene);
 	}
 };
