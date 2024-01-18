@@ -12,14 +12,14 @@ export default class Player extends Actor {
 	private movementZ: number = 0;
 	private movementSpeed: number = 0.2;
 	private gravity: number = 9.8;
-	private jumpPower: number = 0.3;
+	private jumpPower: number = 1;
 	private gameInput: GameInput;
 	private ray: Ray;
 	private isOnGround: boolean = false;
 	private capsuleAgregate: PhysicsAggregate
 	constructor(name: string, scene: Scene) {
 		super(name, scene)
-		this.capsuleAgregate = new PhysicsAggregate(this.root, PhysicsShapeType.CAPSULE, { mass: 10, radius: 0.8, pointA: new Vector3(0, 1.25, 0), pointB: new Vector3(0, 0.7, 0) }, this.scene);
+		this.capsuleAgregate = new PhysicsAggregate(this.root, PhysicsShapeType.CAPSULE, { mass: 10, restitution: 0.1, radius: 0.8, pointA: new Vector3(0, 1.25, 0), pointB: new Vector3(0, 0.7, 0) }, this.scene);
 		this.capsuleAgregate.body.setMassProperties({
 			inertia: new Vector3(0, 0, 0)
 		});
@@ -37,6 +37,7 @@ export default class Player extends Actor {
 			this.updatePosition();
 			this.isOnGround = this.checkGroundCollision();
 			console.log(this.isOnGround)
+			console.log(this.movementY)
 			this.move(deltaTime);
 			this.jump();
 		}
@@ -45,7 +46,7 @@ export default class Player extends Actor {
 	onBeginPlay = () => {
 		console.log('DuckActor onBeginPlay');
 		this.meshAssetsMap.get(this.name)?.loadedMeshes[0].position.set(0, 0, 0);
-		this.createCollider();
+		// this.createCollider();
 		this.updatePosition();
 	};
 
@@ -80,6 +81,8 @@ export default class Player extends Actor {
 	private jump = () => {
 		if (this.gameInput.checkjumpInput() && this.isOnGround) {
 			this.movementY = this.jumpPower;
+		} else {
+			this.movementY = 0; 
 		}
 	}
 
