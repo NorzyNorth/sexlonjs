@@ -1,4 +1,4 @@
-import { AbstractMesh, Color3, MeshBuilder, PhysicsAggregate, PhysicsBody, PhysicsMotionType, PhysicsShapeCapsule, PhysicsShapeType, PickingInfo, Ray, RayHelper, Scene, Vector3 } from "@babylonjs/core";
+import { AbstractMesh, Color3, MeshBuilder, PhysicsAggregate, PhysicsBody, PhysicsMotionType, PhysicsShapeCapsule, PhysicsShapeCylinder, PhysicsShapeType, PickingInfo, Ray, RayHelper, Scene, Vector3 } from "@babylonjs/core";
 import { Actor } from "../GameFramework";
 import GameInput from "client/scripts/GameInput";
 import * as BABYLON from "@babylonjs/core"
@@ -55,7 +55,6 @@ export default class Player extends Actor {
 		console.log('DuckActor onBeginPlay');
 		this.meshAssetsMap.get(this.name)?.loadedMeshes[0].position.set(0, 0, 0);
 		this.createCollider();
-		this.createCollider();
 		this.updatePosition();
 	};
 
@@ -64,7 +63,6 @@ export default class Player extends Actor {
 	}
 
 	private checkGroundCollision = () => {
-		this.ray.origin = new Vector3(this.root.position._x, this.root.position._y, this.root.position._z)
 		this.ray.origin = new Vector3(this.root.position._x, this.root.position._y, this.root.position._z)
 		const hitInfo: PickingInfo = this.scene.pickWithRay(this.ray, (mesh: AbstractMesh) => !(mesh == this.root))
 		// console.log(`${this.ray.origin._x} , ${this.rayHelper.ray.origin._x}, ${this.root.position._x}, ${this.position._x}, ${this.meshAssetsMap.get(this.name)?.loadedMeshes[0].position}`)
