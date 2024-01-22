@@ -75,7 +75,7 @@ export const addEntities = (level: Level, world: World) => {
 	// })
 
 	const player = new Player('Duck', level.scene);
-	world.spawnActor(player, new Vector3(0, 100, 0));
+	world.spawnActor(player, new Vector3(0, 10, 0));
 	// const player = new TestCharacter(level.scene);
 
 	// const camera = new TestCamera(level.scene, player);

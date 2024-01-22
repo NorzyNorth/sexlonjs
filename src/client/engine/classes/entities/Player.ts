@@ -33,10 +33,11 @@ export default class Player extends Actor {
 		this.addMeshAssetTask(this.name, "models/", "Duck.glb");
 	}
 
-	
+
 	onTick = (deltaTime: number) => {
 		if (deltaTime) {
 			this.updatePosition();
+			// this.centerView();
 			this.isOnGround = this.checkGroundCollision();
 			this.move(deltaTime);
 			this.jump();
@@ -61,38 +62,42 @@ export default class Player extends Actor {
 	}
 
 	private tumbler = () => {
-		if (this.isOnGround  && !this.preOnGroud) {
+		if (this.isOnGround && !this.preOnGroud) {
 			this.preOnGroud = true
 			this.movementY = 0
-		}  
+		}
 		if (!this.isOnGround && this.preOnGroud) {
 			this.preOnGroud = false
-		} 
+		}
+	}
+
+	private centerView = () => {
+		this.root.rotation._x = 0;
+		this.root.rotation._z = 0;
 	}
 
 	private move = (deltaTime: number) => {
 		console.log(this.isOnGround)
 		this.movementDirection = this.gameInput.getInputDirection();
 
-		if (this.movementDirection != null) {
-			//Movement
-			this.tumbler()
-			this.movementX = this.movementDirection._x * this.movementSpeed;
-			this.movementZ = this.movementDirection._z * this.movementSpeed;
+		//Movement
+		this.tumbler()
+		this.movementX = this.movementDirection._x * this.movementSpeed;
+		this.movementZ = this.movementDirection._z * this.movementSpeed;
 
 
-			//Gravity
-			// if (!this.isOnGround) {
-			// 	this.movementY -= this.gravity * this.scene.deltaTime / 10000;
-			// }
-			if (!this.isOnGround) {
-				this.movementY += this.scene.gravity.y * this.scene.deltaTime;
-			}
-			console.log(this.movementY);
-			const movement = new Vector3(this.movementX, this.movementY, this.movementZ);
-			// this.root.moveWithCollisions(movement);
-			this.collider.setLinearVelocity(movement);
-		};
+		//Gravity
+		// if (!this.isOnGround) {
+		// 	this.movementY -= this.gravity * this.scene.deltaTime / 10000;
+		// }
+		if (!this.isOnGround) {
+			this.movementY += this.scene.gravity.y * this.scene.deltaTime / 1000;
+		}
+		console.log(this.movementY);
+		console.log(this.scene.deltaTime)
+		const movement = new Vector3(this.movementX, this.movementY, this.movementZ);
+		// this.root.moveWithCollisions(movement);
+		this.collider.setLinearVelocity(movement);
 	};
 
 	private jump = () => {
@@ -102,9 +107,9 @@ export default class Player extends Actor {
 	}
 
 	private createCollider = () => {
-		this.collider = new PhysicsBody(this.root, PhysicsMotionType.DYNAMIC, false, this.scene);
-		this.collider.shape = new PhysicsShapeCylinder(new Vector3(0, 0, 0), new Vector3(0, 2, 0), 0.7, this.scene);
-		this.collider.shape.material = {restitution: 0}
+		this.collider = new PhysicsBody(this.root, PhysicsMotionType.ANIMATED, false, this.scene);
+		this.collider.shape = new PhysicsShapeCapsule(new Vector3(0, 0.7, 0), new Vector3(0, 1.4, 0), 0.7, this.scene);
+		this.collider.shape.material = { restitution: 0 }
 		// this.collider.disablePreStep = true;
 	}
 };
