@@ -72,7 +72,9 @@ export default class Player extends Actor {
 			// if (!this.isOnGround) {
 			// 	this.movementY -= this.gravity * this.scene.deltaTime / 10000;
 			// }
-			this.movementY += this.scene.gravity.y * this.scene.deltaTime;
+			if (!this.isOnGround) {
+				this.movementY += this.scene.gravity.y * this.scene.deltaTime;
+			}
 			console.log(this.movementY);
 			const movement = new Vector3(this.movementX, this.movementY, this.movementZ);
 			// this.root.moveWithCollisions(movement);
