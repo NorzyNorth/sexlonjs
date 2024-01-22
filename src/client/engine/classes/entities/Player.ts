@@ -19,6 +19,7 @@ export default class Player extends Actor {
 	private ray: Ray;
 	private rayHelper: RayHelper;
 	private isOnGround: boolean = false;
+	private preOnGroud: boolean = true;
 	private collider: PhysicsBody;
 	constructor(name: string, scene: Scene) {
 		super(name, scene)
@@ -59,11 +60,23 @@ export default class Player extends Actor {
 		return hitInfo.hit ? true : false
 	}
 
+	private tumbler = () => {
+		if (this.isOnGround  && !this.preOnGroud) {
+			this.preOnGroud = true
+			this.movementY = 0
+		}  
+		if (!this.isOnGround && this.preOnGroud) {
+			this.preOnGroud = false
+		} 
+	}
+
 	private move = (deltaTime: number) => {
+		console.log(this.isOnGround)
 		this.movementDirection = this.gameInput.getInputDirection();
 
 		if (this.movementDirection != null) {
 			//Movement
+			this.tumbler()
 			this.movementX = this.movementDirection._x * this.movementSpeed;
 			this.movementZ = this.movementDirection._z * this.movementSpeed;
 
