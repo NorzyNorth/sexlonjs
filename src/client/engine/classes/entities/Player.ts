@@ -102,7 +102,7 @@ export default class Player extends Actor {
 
 	private jump = () => {
 		if (this.gameInput.checkjumpInput() && this.isOnGround) {
-			this.collider.applyImpulse(new Vector3(0, this.jumpPower, 0), this.root.position, 5);
+			this.collider.setLinearVelocity(new Vector3(0, this.jumpPower, 0));
 		}
 	}
 
