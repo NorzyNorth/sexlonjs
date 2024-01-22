@@ -18,7 +18,7 @@ export default class GameInput {
 		scene.actionManager.registerAction(
 			new ExecuteCodeAction(ActionManager.OnKeyDownTrigger, function (evt) {
 				inputMap[evt.sourceEvent.inputIndex] = evt.sourceEvent.type == "keydown";
-				console.log(evt.sourceEvent.inputIndex)
+				// console.log(evt.sourceEvent.inputIndex)
 			}),
 		);
 		scene.actionManager.registerAction(

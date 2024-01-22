@@ -1,7 +1,9 @@
-import { AbstractMesh, Color3, MeshBuilder, PhysicsAggregate, PhysicsBody, PhysicsMotionType, PhysicsShapeCapsule, PhysicsShapeCylinder, PhysicsShapeType, PickingInfo, Ray, RayHelper, Scene, Vector3 } from "@babylonjs/core";
+import { AbstractMesh, Color3, MeshBuilder, PhysicsAggregate, PhysicsBody, PhysicsMotionType, PhysicsShapeCapsule, PhysicsShapeType, PickingInfo, Ray, RayHelper, Scene, Vector3 } from "@babylonjs/core";
 import { Actor } from "../GameFramework";
 import GameInput from "client/scripts/GameInput";
-
+import * as BABYLON from "@babylonjs/core"
+import { PhysicsEngine } from "@babylonjs/core/Physics/v2/physicsEngine";
+import { HavokPlugin } from "@babylonjs/core";
 export default class Player extends Actor {
 	name: string;
 	scene: Scene;
@@ -10,7 +12,8 @@ export default class Player extends Actor {
 	private movementX: number = 0;
 	private movementY: number = 0;
 	private movementZ: number = 0;
-	private movementSpeed: number = 7;
+	private movementSpeed: number = 0.2;
+	private gravity: number = 9.8;
 	private jumpPower: number = 1;
 	private gameInput: GameInput;
 	private ray: Ray;
@@ -35,13 +38,15 @@ export default class Player extends Actor {
 		this.addMeshAssetTask(this.name, "models/", "Duck.glb");
 	}
 
+	
 	onTick = (deltaTime: number) => {
+		// console.log()
 		if (deltaTime) {
 			this.updatePosition();
 			this.isOnGround = this.checkGroundCollision();
-			console.log(this.isOnGround)
-			console.log(this.movementY)
 			this.move(deltaTime);
+			console.log(this.isOnGround)
+			// console.log(this.movementY)
 			this.jump();
 		}
 	};
@@ -49,6 +54,7 @@ export default class Player extends Actor {
 	onBeginPlay = () => {
 		console.log('DuckActor onBeginPlay');
 		this.meshAssetsMap.get(this.name)?.loadedMeshes[0].position.set(0, 0, 0);
+		this.createCollider();
 		this.createCollider();
 		this.updatePosition();
 	};
@@ -59,13 +65,16 @@ export default class Player extends Actor {
 
 	private checkGroundCollision = () => {
 		this.ray.origin = new Vector3(this.root.position._x, this.root.position._y, this.root.position._z)
+		this.ray.origin = new Vector3(this.root.position._x, this.root.position._y, this.root.position._z)
 		const hitInfo: PickingInfo = this.scene.pickWithRay(this.ray, (mesh: AbstractMesh) => !(mesh == this.root))
+		// console.log(`${this.ray.origin._x} , ${this.rayHelper.ray.origin._x}, ${this.root.position._x}, ${this.position._x}, ${this.meshAssetsMap.get(this.name)?.loadedMeshes[0].position}`)
+		// console.log(this.scene.getNodeById('Pivot'))
 		return hitInfo.hit ? true : false
 	}
 
 	private move = (deltaTime: number) => {
 		this.movementDirection = this.gameInput.getInputDirection();
-		
+
 		if (this.movementDirection != null) {
 			//Movement
 			this.movementX = this.movementDirection._x * this.movementSpeed;
