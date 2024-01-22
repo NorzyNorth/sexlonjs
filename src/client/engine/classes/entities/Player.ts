@@ -1,7 +1,9 @@
-import { AbstractMesh, Color3, MeshBuilder, PhysicsAggregate, PhysicsBody, PhysicsMotionType, PhysicsShapeCapsule, PhysicsShapeType, PickingInfo, Ray, Scene, Vector3 } from "@babylonjs/core";
+import { AbstractMesh, Color3, MeshBuilder, PhysicsAggregate, PhysicsBody, PhysicsMotionType, PhysicsShapeCapsule, PhysicsShapeType, PickingInfo, Ray, RayHelper, Scene, Vector3 } from "@babylonjs/core";
 import { Actor } from "../GameFramework";
 import GameInput from "client/scripts/GameInput";
-
+import * as BABYLON from "@babylonjs/core"
+import { PhysicsEngine } from "@babylonjs/core/Physics/v2/physicsEngine";
+import { HavokPlugin } from "@babylonjs/core";
 export default class Player extends Actor {
 	name: string;
 	scene: Scene;
@@ -12,33 +14,32 @@ export default class Player extends Actor {
 	private movementZ: number = 0;
 	private movementSpeed: number = 0.2;
 	private gravity: number = 9.8;
-	private jumpPower: number = 1;
+	private jumpPower: number = 0.1;
 	private gameInput: GameInput;
 	private ray: Ray;
 	private isOnGround: boolean = false;
-	private capsuleAgregate: PhysicsAggregate
+	private collider: PhysicsBody
+	private rayHelper: RayHelper
 	constructor(name: string, scene: Scene) {
 		super(name, scene)
-		this.capsuleAgregate = new PhysicsAggregate(this.root, PhysicsShapeType.CAPSULE, { mass: 10, restitution: 0.1, radius: 0.8, pointA: new Vector3(0, 1.25, 0), pointB: new Vector3(0, 0.7, 0) }, this.scene);
-		this.capsuleAgregate.body.setMassProperties({
-			inertia: new Vector3(0, 0, 0)
-		});
-		this.capsuleAgregate.body.disablePreStep = false
 		this.name = name;
 		this.scene = scene;
 		this.gameInput = new GameInput(scene);
-		this.ray = new Ray(new Vector3(this.root.position._x, this.root.position._y, this.root.position._z), new Vector3(0, -1, 0), 0.2);
-
+		this.ray = new Ray(new Vector3(this.root.position._x, this.root.position._y, this.root.position._z), new Vector3(0, -1, 0), 0.05);
+		this.rayHelper = new RayHelper(this.ray)
+		this.rayHelper.show(this.scene, new Color3(255, 0, 0))
 		this.addMeshAssetTask(this.name, "models/", "Duck.glb");
 	}
 
+	
 	onTick = (deltaTime: number) => {
+		// console.log()
 		if (deltaTime) {
 			this.updatePosition();
 			this.isOnGround = this.checkGroundCollision();
-			console.log(this.isOnGround)
-			console.log(this.movementY)
 			this.move(deltaTime);
+			console.log(this.isOnGround)
+			// console.log(this.movementY)
 			this.jump();
 		}
 	};
@@ -46,7 +47,7 @@ export default class Player extends Actor {
 	onBeginPlay = () => {
 		console.log('DuckActor onBeginPlay');
 		this.meshAssetsMap.get(this.name)?.loadedMeshes[0].position.set(0, 0, 0);
-		// this.createCollider();
+		this.createCollider();
 		this.updatePosition();
 	};
 
@@ -55,14 +56,16 @@ export default class Player extends Actor {
 	}
 
 	private checkGroundCollision = () => {
-		this.ray.origin = new Vector3(this.root.position._x, this.root.position._y - 0.1, this.root.position._z)
+		this.ray.origin = new Vector3(this.root.position._x, this.root.position._y, this.root.position._z)
 		const hitInfo: PickingInfo = this.scene.pickWithRay(this.ray, (mesh: AbstractMesh) => !(mesh == this.root))
+		// console.log(`${this.ray.origin._x} , ${this.rayHelper.ray.origin._x}, ${this.root.position._x}, ${this.position._x}, ${this.meshAssetsMap.get(this.name)?.loadedMeshes[0].position}`)
+		// console.log(this.scene.getNodeById('Pivot'))
 		return hitInfo.hit ? true : false
 	}
 
 	private move = (deltaTime: number) => {
 		this.movementDirection = this.gameInput.getInputDirection();
-		
+
 		if (this.movementDirection != null) {
 			//Movement
 			this.movementX = this.movementDirection._x * this.movementSpeed;
@@ -74,23 +77,30 @@ export default class Player extends Actor {
 			// 	this.movementY -= this.gravity * this.scene.deltaTime / 10000;
 			// }
 			const movement = new Vector3(this.movementX, this.movementY, this.movementZ);
-			this.root.moveWithCollisions(movement);
+			this.root.moveWithCollisions(movement).position
+			// console.log(this.root.moveWithCollisions(movement).position);
+			// console.log(movement)
+			// console.log(this.movementDirection)
 		};
 	};
 
 	private jump = () => {
 		if (this.gameInput.checkjumpInput() && this.isOnGround) {
 			this.movementY = this.jumpPower;
-		} else {
-			this.movementY = 0; 
 		}
 	}
 
 	private createCollider = () => {
 		// const capsuleAgregate = new PhysicsAggregate(this.root, PhysicsShapeType.CAPSULE, { mass: 1, restitution: 0, radius: 0.7, pointA: new Vector3(0, 0.7, 0), pointB: new Vector3(0, 1.4, 0) }, this.scene);
-		const body = new PhysicsBody(this.root, PhysicsMotionType.DYNAMIC, false, this.scene);
-		body.shape = new PhysicsShapeCapsule(new Vector3(0, 0.7, 0), new Vector3(0, 1.4, 0), 0.7, this.scene);
-		body.shape.material = {restitution: 0}
-		body.disablePreStep = false;
+		const collider = new PhysicsBody(this.root, PhysicsMotionType.DYNAMIC, false, this.scene);
+		collider.shape = new PhysicsShapeCapsule(new Vector3(0, 0.7, 0), new Vector3(0, 1.4, 0), 0.7, this.scene);
+		// collider.shape = new PhysicsShapeCapsule(new Vector3(0, 0.3, 0), new Vector3(0, 1.4, 0), 1.7, this.scene);
+
+		collider.setMassProperties({
+			inertia: new Vector3(1, 1, 1),
+
+		})
+		collider.shape.material = { restitution: 0 }
+		collider.disablePreStep = false;
 	}
 };
