@@ -26,7 +26,7 @@ export default class Player extends Actor {
 		this.name = name;
 		this.scene = scene;
 		this.gameInput = new GameInput(scene);
-		this.ray = new Ray(new Vector3(this.root.position._x, this.root.position._y + 0.005, this.root.position._z), new Vector3(0, -1, 0), 0.1);
+		this.ray = new Ray(new Vector3(this.root.position._x, this.root.position._y , this.root.position._z), new Vector3(0, -1, 0), 2);
 		this.rayHelper = new RayHelper(this.ray);
 		this.rayHelper.show(this.scene, new Color3(255, 0, 0));
 
@@ -56,9 +56,13 @@ export default class Player extends Actor {
 	}
 
 	private checkGroundCollision = () => {
-		this.ray.origin = new Vector3(this.root.position._x, this.root.position._y + 0.005, this.root.position._z)
-		const hitInfo: PickingInfo = this.scene.pickWithRay(this.ray, (mesh: AbstractMesh) => !(mesh == this.root))
-		return hitInfo.hit ? true : false
+		this.ray.origin = new Vector3(this.root.position._x, this.root.position._y+1  , this.root.position._z)
+		const hitInfo: PickingInfo[] = this.scene.multiPickWithRay(this.ray, (mesh: AbstractMesh) => !(mesh == this.root))
+		
+		hitInfo.length > 0 ? console.log(hitInfo) : null
+		
+		// return hitInfo.hit ? true : false
+		return hitInfo.length > 0 ? true : false
 	}
 
 	private tumbler = () => {
@@ -91,7 +95,7 @@ export default class Player extends Actor {
 		// 	this.movementY -= this.gravity * this.scene.deltaTime / 10000;
 		// }
 		if (!this.isOnGround) {
-			this.movementY += this.scene.gravity.y * this.scene.deltaTime / 1000;
+			this.movementY += this.scene.gravity.y * this.scene.deltaTime / 100000;
 		}
 		console.log(this.movementY);
 		console.log(this.scene.deltaTime)
@@ -110,6 +114,10 @@ export default class Player extends Actor {
 		this.collider = new PhysicsBody(this.root, PhysicsMotionType.ANIMATED, false, this.scene);
 		this.collider.shape = new PhysicsShapeCapsule(new Vector3(0, 0.7, 0), new Vector3(0, 1.4, 0), 0.7, this.scene);
 		this.collider.shape.material = { restitution: 0 }
+
+		// best 0
+		// nobest 0.0000000000000000000000000000000000000000000000000000000000000000000000000000000000001
+
 		// this.collider.disablePreStep = true;
 	}
 };
