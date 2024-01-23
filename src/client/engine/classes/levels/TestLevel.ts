@@ -37,11 +37,11 @@ export const addEntities = (level: Level, world: World) => {
 	groundCollider.shape = new PhysicsShapeBox(
 		ground.position, 
 		Quaternion.Identity(), 
-		new Vector3(50, 0.1 , 50),
+		new Vector3(50, 1 , 50),
 		level.scene 
 	);
 	groundCollider.shape.material = {
-		friction: 0.5,
+		friction: 0,
 		restitution: 0
 	};
 	ground.physicsBody = groundCollider
@@ -96,6 +96,26 @@ export const addEntities = (level: Level, world: World) => {
 	// 	// sphere2.moveWithCollisions(new Vector3(0, -0.1, 0));
 	// })
 
+	const box = MeshBuilder.CreateBox('hui',{size: 10})
+	box.position = new Vector3(0,200,0)
+	let boxCollider = new PhysicsBody(
+		box,
+		PhysicsMotionType.DYNAMIC, 
+		false, 
+		level.scene 
+	);
+	boxCollider.shape = new PhysicsShapeBox(
+		ground.position, 
+		Quaternion.Identity(), 
+		new Vector3(10, 10 , 10),
+		level.scene 
+	);
+	boxCollider.shape.material = {
+		friction: 0,
+		restitution: 0
+	};
+	box.physicsBody = boxCollider
+	console.log(boxCollider.getCollisionObservable())
 	const player = new Player('Duck', level.scene);
 	world.spawnActor(player, new Vector3(0, 100, 0));
 	// const player = new TestCharacter(level.scene);
