@@ -1,5 +1,5 @@
-import { ArcRotateCamera, FreeCamera, SceneLoader, HemisphericLight, MeshBuilder, Vector3, StandardMaterial, Color3 } from "@babylonjs/core";
-import { PhysicsAggregate, PhysicsShapeType } from '@babylonjs/core/Physics/v2'
+import { ArcRotateCamera, FreeCamera, SceneLoader, HemisphericLight, MeshBuilder, Vector3, StandardMaterial, Color3, PhysicsBody, Quaternion, PhysicsImpostor } from "@babylonjs/core";
+import { PhysicsAggregate, PhysicsMotionType, PhysicsShapeBox, PhysicsShapeType } from '@babylonjs/core/Physics/v2'
 import { World } from "client/engine/classes/engine/World";
 import { Level } from "client/engine/classes/engine/Level";
 // import TestCharacter from "client/entities/TestCharacter";
@@ -7,6 +7,7 @@ import { Level } from "client/engine/classes/engine/Level";
 import { Inspector } from "@babylonjs/inspector";
 import Player from "../entities/Player";
 import TestCharacter from "../entities/TestCharacter";
+import { lensFlareVertexShader } from "@babylonjs/core/Shaders/lensFlare.vertex";
 
 export const initLevel = async (world: World) => {
 	const level = await world.createLevel();
@@ -17,14 +18,35 @@ export const initLevel = async (world: World) => {
 export const addEntities = (level: Level, world: World) => {
 	// Inspector.Show(level.scene, {});
 
+	
 	const camera = new FreeCamera('camera', new Vector3(0,2,-24), level.scene);
 	camera.attachControl(true);
-
+	
 	level.scene.collisionsEnabled = true
 	const ground = MeshBuilder.CreateGround('ground', { width: 50, height: 50 }, level.scene);
 
-	const groundAggregate = new PhysicsAggregate(ground, PhysicsShapeType.BOX, { mass: 0 }, level.scene);
+	// const groundAggregate = new PhysicsAggregate(ground, PhysicsShapeType.BOX, { mass: 0 }, level.scene);
 
+	// add ground collider
+	let groundCollider = new PhysicsBody(
+		ground,
+		PhysicsMotionType.STATIC, 
+		false, 
+		level.scene 
+	);
+	groundCollider.shape = new PhysicsShapeBox(
+		ground.position, 
+		Quaternion.Identity(), 
+		new Vector3(50, 0.1 , 50),
+		level.scene 
+	);
+	groundCollider.shape.material = {
+		friction: 0.5,
+		restitution: 0
+	};
+	ground.physicsBody = groundCollider
+
+	// level.scene.addPhysicsBody(groundCollider);
 	// const sphere = MeshBuilder.CreateSphere("sphere", {diameter: 2, segments: 32}, level.scene);
 
 	// sphere.position.y = 4;
@@ -75,8 +97,16 @@ export const addEntities = (level: Level, world: World) => {
 	// })
 
 	const player = new Player('Duck', level.scene);
-	world.spawnActor(player, new Vector3(0, 1, 0));
+	world.spawnActor(player, new Vector3(0, 100, 0));
 	// const player = new TestCharacter(level.scene);
 
 	// const camera = new TestCamera(level.scene, player);
+
+	console.log(`==BEGIN==`);
+	
+	level.scene.meshes.forEach(mesh => {
+		mesh.physicsImpostor ? console.log(mesh) : console.log(mesh)
+	})
+	console.log(`==END==`);
+
 }
